@@ -2,7 +2,7 @@
 
 Statement Task 
 notes the application
-i make a simple Spring boot app for news Subscription and using spring boot security and JWT authentication for user login and authenticate for further requests by Jwt token i make it expires after 5 minutes..
+i make a simple Spring boot app for User Statement and using spring boot security and JWT authentication for user login and authenticate for further requests by Jwt token i make it expires after 5 minutes..
 
 using Spring Boot , Spring Security (JWT) , Rest Apis , MSAccess as the DB!.
 
@@ -14,7 +14,7 @@ steps
 2.prepare your enviroment if you work locally or on a production :
   * clone the git repository
   * setup java ide (sts, intelij,etc)
-  * import the News Subscription microservicein the ide and download dependencies.
+  * import the Statement Task microservicein the ide and download dependencies.
 4. run the microservice.
 5. you can now work with the rest apis.
 
