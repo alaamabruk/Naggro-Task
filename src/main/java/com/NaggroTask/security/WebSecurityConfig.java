@@ -1,5 +1,7 @@
+
 package com.NaggroTask.security;
 
+import com.NaggroTask.exception.APIAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+	
 	@Autowired
 	private UserDetailsService myUserDetailsService;
 	
@@ -40,14 +43,25 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return super.authenticationManagerBean();
 	}
 
+	@Bean
+	public JwtRequestFilter JwtRequestFilter() {
+		return new JwtRequestFilter();
+	}
+
+	@Autowired
+	private APIAuthenticationEntryPoint unauthorizedAccessHandler;
+
+
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 		httpSecurity.csrf().disable()
 				.authorizeRequests().antMatchers("/login").permitAll().
 						anyRequest().authenticated().and().
-						exceptionHandling().and().sessionManagement()
+						exceptionHandling().authenticationEntryPoint(unauthorizedAccessHandler).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
 
 	}
 }
+
