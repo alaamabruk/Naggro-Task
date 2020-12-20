@@ -9,15 +9,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.NaggroTask.exception.BadCredentialsException;
 import com.NaggroTask.exception.ConcurrentLoginException;
 import com.NaggroTask.model.AuthenticationRequest;
 import com.NaggroTask.model.AuthenticationResponse;
-import com.NaggroTask.security.StoredToken;
 import com.NaggroTask.security.JwtUtil;
+import com.NaggroTask.security.StoredToken;
 import com.NaggroTask.security.authentication.MyUserDetailsService;
 import com.NaggroTask.security.authentication.UserPrinciple;
 
@@ -36,7 +34,7 @@ class RequestController {
 	private MyUserDetailsService userDetailsService;
 	
 	@Autowired
-	StoredToken storedtoken;
+	private StoredToken storedtoken;
 	
 	
 	
@@ -48,17 +46,12 @@ class RequestController {
 	
      
 	
-    @ResponseBody
+   
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 		
-    	try {
-    		
     		authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(authenticationRequest.getUserName(),
                     authenticationRequest.getPassword()) );
-		} catch (Exception e) {
-			 throw new BadCredentialsException(authenticationRequest.getUserName());
-		}
 		  UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUserName());
 		  
 		  String token = storedtoken.getTokenByUserName(authenticationRequest.getUserName());
@@ -79,17 +72,10 @@ class RequestController {
 	@RequestMapping(value = "/logOut", method = RequestMethod.GET)
 	public ResponseEntity<? extends Object> logout() {
 		UserPrinciple user=null;
-		try {
-    		System.out.println("In logOut");
-    		 user = (UserPrinciple) (SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		} catch (Exception e) {
-			 throw new BadCredentialsException("");
-		}
-		 // user = (UserPrinciple) (SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		     storedtoken.removeTokenByKey(user.getUsername());
+		user = (UserPrinciple) (SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		storedtoken.removeTokenByKey(user.getUsername());
 		return ResponseEntity.ok(new AuthenticationResponse(null, "Successful LogOut"));
 	}
  
 	
 }
-	
