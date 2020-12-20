@@ -42,7 +42,7 @@ public class StatementServiceImpl implements StatementService {
 			LocalDate fromDate, LocalDate toDate, Double fromAmount,
 			Double toAmount) {
 		
-		boolean isDatePrisent = fromDate != null;
+		boolean isDatePresent = fromDate != null;
 		Optional<Account> account = accountRepository.findById(accountId);
 		
 		if (!account.isPresent()) 
@@ -60,26 +60,12 @@ public class StatementServiceImpl implements StatementService {
 	
 		List<Statement> accountStatements = statementRepository.findByAccountId(accountId);
 
-		if (isDatePrisent)
-			
-			statements = accountStatements.stream()
-			.filter(st -> LocalDate.parse(st.getDateField(), formatter).compareTo(fromDate) >= 0
-					&& LocalDate.parse(st.getDateField(), formatter).compareTo(toDate) <= 0
-					&& ( toAmount == null ? true
-							: (st.getAmount().compareTo(fromAmount) >= 0
-							&& st.getAmount().compareTo(toAmount) <= 0)))
-	                                .collect(Collectors.toList());
+		if (isDatePresent)
+               statements = getStatements(toDate, fromAmount, toAmount, formatter, accountStatements, fromDate);
 		else {
 			LocalDate userAllowedDate = LocalDate.now().minusMonths(3);
-			statements = accountStatements.stream()
-			.filter(st -> LocalDate.parse(st.getDateField(), formatter).compareTo(userAllowedDate) >= 0
-					&& LocalDate.parse(st.getDateField(), formatter).compareTo(toDate) <= 0
-					&& ( toAmount == null ? true
-							: (st.getAmount().compareTo(fromAmount) >= 0
-							&& st.getAmount().compareTo(toAmount) <= 0)))
-	                                .collect(Collectors.toList());
-			
-		}
+			statements = getStatements(null, fromAmount, toAmount, formatter, accountStatements, userAllowedDate);
+             }
 		
 		statements.forEach(statement -> {
 			statementDTOList.add(new StatementDTO(LocalDate.parse(statement.getDateField(), formatter), statement.getAmount()));
@@ -87,7 +73,19 @@ public class StatementServiceImpl implements StatementService {
 				accountStatementDTO.setStatements(statementDTOList);
 		return accountStatementDTO;
 	}
-	
+
+	private List<Statement> getStatements(LocalDate toDate, Double fromAmount, Double toAmount, DateTimeFormatter formatter, List<Statement> accountStatements, LocalDate userfromDate) {
+		List<Statement> statements;
+		statements = accountStatements.stream()
+		.filter(st -> LocalDate.parse(st.getDateField(), formatter).compareTo(userfromDate) >= 0
+				&& LocalDate.parse(st.getDateField(), formatter).compareTo(toDate) <= 0
+				&& ( toAmount == null ? true
+						: (st.getAmount().compareTo(fromAmount) >= 0
+						&& st.getAmount().compareTo(toAmount) <= 0)))
+								.collect(Collectors.toList());
+		return statements;
+	}
+
 
 	private void validateRequestParam(LocalDate fromDate, LocalDate toDate,
 			Double fromAmount, Double toAmount) {
