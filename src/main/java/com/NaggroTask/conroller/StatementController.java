@@ -31,7 +31,7 @@ public class StatementController {
     }
 
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or " + "(hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or " + "hasRole('ROLE_USER')")
 	@RequestMapping(value = "/{accountId}", method = RequestMethod.GET)
 	public AccountStatementDTO findStatement(
 			@PathVariable("accountId") Integer accountId,
