@@ -86,13 +86,6 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return buildResponseEntity(error);
 	}
 	
-	@ExceptionHandler(BadCredentialsException.class)
-	protected ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException e, WebRequest request) {
-		GeneralError error = new GeneralError(UNAUTHORIZED);
-		error.setMessage(String.format(e.getMessage()));
-		return buildResponseEntity(error);
-	}
-	
 	@ExceptionHandler(InvalidDateRangeException.class)
 	protected ResponseEntity<Object> handleBadInvalidDateRangeException(InvalidDateRangeException e, WebRequest request) {
 		GeneralError error = new GeneralError(BAD_REQUEST);
