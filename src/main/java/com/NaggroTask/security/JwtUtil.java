@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class JwtUtil {
 
 	@Value("${app.token.expiration}")
 	private int jwtTokenExpiration;
+	
+	
+	@Autowired
+	private StoredToken storedToken;
 
 	
 	
@@ -62,6 +67,10 @@ public class JwtUtil {
 
     public Boolean validateToken(String token, UserDetails userDetails) {
     	final String username = extractUsername(token);
+    	String storedtoken = storedToken.getTokenByUserName(username);
+		if (storedtoken == null || !storedtoken.equals(token)) {
+			return false;
+		}
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }
